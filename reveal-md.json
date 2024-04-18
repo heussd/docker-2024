@@ -1,0 +1,10 @@
+{
+  "title": "Docker 2024",
+  "separator": "<!-- chapter -->",
+  "verticalSeparator": "^---$",
+  "mermaid": {
+    "theme": "dark"
+  },
+  "scripts": "mermaid.min.js",
+  "css": "style-overrides.css"
+}

@@ -1,0 +1,17 @@
+img2 {
+ max-height: 300px !important;
+}
+h1 {
+  margin-bottom: 300px !important;
+}
+table {
+  font-size: 70% !important;
+}
+.mermaid {
+  display: flex !important;
+  justify-content: center !important;
+  padding: 0px !important;
+}
+pre {
+  box-shadow: none !important;
+}

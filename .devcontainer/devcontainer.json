@@ -1,0 +1,16 @@
+{
+    "build": { "dockerfile": "../Dockerfile", "target": "dev" },
+    "customizations": {
+        "vscode": {
+            "settings": {},
+            "extensions": [
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-german",
+                "DavidAnson.vscode-markdownlint",
+                "bierner.markdown-mermaid"
+            ]
+        }
+    },
+
+    "postStartCommand": "node /app/bin/reveal-md.js . --watch"
+}
