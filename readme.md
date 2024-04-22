@@ -846,6 +846,138 @@ service:
 <!-- chapter -->
 ## Devcontainers
 
+---
+
+### Pre-Devcontainer Development
+
+```mermaid
+block-beta
+columns 4
+
+space space space app
+space space space ide["IDE"]
+space space space dev["Dev tools"] 
+db["Additional containers"] space space interpreter["Code Interpreter"] 
+
+Docker["Docker Engine"]:2 space Win["Host OS / Applications"]
+k["Host Kernel"]:4
+i["Host Infrastructure"]:4
+
+style ide fill:red
+style dev fill:red
+style interpreter fill:red
+```
+
+Reproducibility challenges with dev tools and code interpreter.
+
+---
+
+### Devcontainer Development
+
+```mermaid
+block-beta
+columns 4
+
+space app space space
+space dev["Dev tools"] space space
+db["Additional containers"] interpreter["Code Interpreter"] space IDE
+
+Docker["Docker Engine"]:2 space Win["Host OS / Applications"]
+k["Host Kernel"]:4
+i["Host Infrastructure"]:4
+
+IDE --> interpreter
+
+style dev fill:green
+style interpreter fill:green
+```
+
+Machine-readable reproducibility for dev tools and code interpreter.
+
+---
+
+### Cloud-based Devcontainer Development
+
+```mermaid
+block-beta
+columns 5
+
+space app space:3
+space dev["Dev tools"] space:3
+db["Additional containers"] interpreter["Code Interpreter"] cs["Codespaces / Coder"] space Browser
+
+Docker["Docker Engine"]:2 space:2 Win["Host OS / Applications"]
+Cloud:3 space k["Host Kernel"]
+
+style dev fill:green
+style interpreter fill:green
+style cs fill:blue
+style Browser fill:blue
+
+Browser --> cs
+```
+
+---
+
+### A minimal devcontainer defines one of the following
+
+- prebuilt base image such as `mcr.microsoft.com/devcontainers/base:ubuntu`
+- local `Dockerfile`
+- local `compose.yml`
+
+These cannot be mixed, so `compose.yml` it is if the other's dont work.
+
+---
+
+| | Dockerfile | compose.yml | devcontainer.json
+|---|:---:|:---:|:---:|
+|Runtime environment | Base image | Base image, Dockerfile | Base image, Dockerfile, compose.yml |
+|Support services / databases |  | services |  |
+|Build dependencies | Install in layer |  | |
+|Additional dev / convenience tooling |  |  | [Features](https://containers.dev/features) |
+|IDE settings and plugins | | | for supported IDEs |
+
+---
+
+### devcontainer.json
+
+```json [|2-5|6-9|12-16|17-22|25]
+{
+  "build": {
+      "dockerfile": "../Dockerfile",
+      "target": "dev"
+  },
+  "features": {
+    "ghcr.io/shinepukur/devcontainer-features/vale:1": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "dotfiles.repository": "https://github.com/heussd/dotfiles",
+        "dotfiles.targetPath": "~/.dotfiles",
+        "dotfiles.installCommand": ".install.sh",
+      },
+      "extensions": [
+        "streetsidesoftware.code-spell-checker",
+        "streetsidesoftware.code-spell-checker-german",
+        "DavidAnson.vscode-markdownlint",
+        "bierner.markdown-mermaid"
+      ]
+    }
+  },
+  "postStartCommand": "node /app/bin/reveal-md.js . --watch"
+}
+```
+
+---
+
+1. `build`: Base image / Dockerfile / compose.yml
+1. `features`: Additional development-only tooling
+1. `settings`: IDE settings, dotfiles
+1. `extensions`: IDE addons
+1. `postStartCommand`: What to do after devcontainer has started
+
 <!-- chapter -->
 ## Useful Tools
 
