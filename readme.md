@@ -115,11 +115,11 @@ FROM alpine # -> apk
 FROM scratch # -> no package manager 
 ```
 
----
-
 ```Dockerfile
 FROM python # -> You cannot tell without looking into it
 ```
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ---
 
@@ -133,42 +133,57 @@ FROM python # -> You cannot tell without looking into it
 FROM python:3.13-rc-alpine3.18 # -> alpine -> apk
 ```
 
----
-
 ```Dockerfile
 FROM python:3.13-rc-bookworm # -> ???
 ```
 
----
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
-```Dockerfile
-FROM python:3.13-rc-bookworm # -> debian version "bookworm"
-```
+- "bookworm" is a Debian version
+- Debian uses `apt`
 
----
+<!-- .element: class="fragment" data-fragment-index="2"-->
 
 ```Dockerfile
 FROM python:3.13-rc-bookworm # -> apt
 ```
+<!-- .element: class="fragment" data-fragment-index="3"-->
 
 ---
 
 #### Installing properly can be tricky
 
 ```Dockerfile
-RUN apt update && apt install -y git # YOLO
+RUN apt update && apt install -y git
 ```
 
-- 👎 No pinned versions
-- 👎 keeps the apt cache
-- 👎 potentially installs unwanted packages.
+- no pinned version for `git`
+- keeps the apt cache in the layer
+- potentially installs unwanted packages
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+👎
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
+---
+
+#### Installing properly with apt
 
 ```Dockerfile
 RUN   apt-get update && \
       apt-get -y install --no-install-recommends \
-      git=1:2.25.1 \
+      git=1.2.25.1 \
       && rm -rf /var/lib/apt/lists/*
 ```
+
+- pinned version for git
+- removes the cache **within the same layer before commit**
+- does not install additional software
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
+👍
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ---
 
@@ -207,22 +222,27 @@ CMD ["apache2ctl", "-D", "FOREGROUND"]
 ```sh
 docker build . -t hello
 ```
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ```sh
 docker images
 ```
+<!-- .element: class="fragment" data-fragment-index="2"-->
 
 ```sh
 docker run --publish 80:80 hello
 ```
+<!-- .element: class="fragment" data-fragment-index="3"-->
 
 ```sh
 docker ps
 ```
+<!-- .element: class="fragment" data-fragment-index="4"-->
 
 ```sh
 docker stop / kill
 ```
+<!-- .element: class="fragment" data-fragment-index="5"-->
 
 ---
 
@@ -244,11 +264,21 @@ COPY . ./
 
 Invalidates cache on every change in the folder.
 
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
+👎
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
+---
+
 ```Dockerfile
 COPY readme.md ./
 ```
 
-Invalidates cache when `readme.md` is changed.
+Invalidates cache only when `readme.md` is changed.
+
+👍
 
 ---
 
@@ -287,10 +317,12 @@ FROM base as runtime
 ```sh
 docker build . # builds until target "runtime"
 ```
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ```sh
 docker build . --target build # builds until target "build"
 ```
+<!-- .element: class="fragment" data-fragment-index="2"-->
 
 ---
 
@@ -302,9 +334,16 @@ FROM base as build
 RUN apt-get update && apt-get install -y git
 ```
 
+Manual installation, waste of time 👎
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+---
+
 ```Dockerfile
 from alpine/git as build
 ```
+
+Wit the right base image we download an installed git 👍
 
 ---
 
@@ -316,11 +355,15 @@ FROM base as build
 RUN apt-get update && apt-get install -y apache2
 ```
 
+⬇️ Better ⬇️
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
 ```Dockerfile
 from httpd
 
 WORKDIR /usr/local/apache2/htdocs/
 ```
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ---
 
@@ -600,7 +643,12 @@ RUN go mod download -x
 ```
 
 - `COPY` just for the package manager
-- Package manager caches that might not be persisted
+- Package manager cache is not be persisted
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+
+👎
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 ---
 
@@ -612,7 +660,11 @@ RUN --mount=type=cache,target=/go/pkg/mod/ \
 ```
 
 - No `COPY` just for the package manager
-- Package manager caches are persisted across builds
+- Package manager cache is persisted across builds
+
+<!-- .element: class="fragment" data-fragment-index="1"-->
+👍
+<!-- .element: class="fragment" data-fragment-index="1"-->
 
 <!-- chapter -->
 
@@ -729,9 +781,6 @@ TOKEN=$(cat /run/secrets/mytoken)
 
 ### People seem to prefer environment variables for secrets
 
----
-<!-- .slide: data-background="img/docker-compose-passwords.png" data-state="intro"-->
----
 ![](img/docker-compose-passwords.png)
 
 <!-- chapter -->
